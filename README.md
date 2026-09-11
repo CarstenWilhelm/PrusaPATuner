@@ -1,5 +1,22 @@
 # Prusa PA Tuner
 
+## Recent updates
+
+- **Configurable printer model** ([#1](https://github.com/CarstenWilhelm/PrusaPATuner/pull/1)) —
+  Select your printer model in the app instead of using a hardcoded COREONE value.
+  Generated calibration G-code now carries the matching model check, avoiding the
+  "G-CODE is for a different printer model" error when configured correctly.
+- **One-click Windows launcher** ([#2](https://github.com/CarstenWilhelm/PrusaPATuner/pull/2)) —
+  Double-click `start.bat` to set up the Python environment and install dependencies
+  on first launch, then start the app. Later launches reuse that environment.
+  Requires Python 3.11+.
+- **Correct print completion** ([a559a94](https://github.com/CarstenWilhelm/PrusaPATuner/commit/a559a94)) —
+  PA, max-flow, and probe G-code now end with explicit 100% progress commands.
+  The printer's normal "Job finished" screen has been verified on hardware after
+  a PA sweep, resolving the return to the printing screen at 0%.
+
+## Overview
+
 Automatic **Pressure Advance (`M572 S`)** calibration for **Prusa printers with a nozzle
 loadcell** (Core One, MK4 / MK4S, MK3.9, XL), using the loadcell as a back-pressure
 sensor — no extra hardware, no printed test patches, no eyeballing of corner artefacts.
