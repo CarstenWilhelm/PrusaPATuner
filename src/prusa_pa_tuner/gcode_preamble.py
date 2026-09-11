@@ -307,3 +307,9 @@ def sweep_end_marker(
     this block differs (loop-trailing blank vs explicit)."""
     lines.append(f"M117 {m117_prefix}_SWEEP_END")
     lines.append(f"{marker_prefix} SWEEP_END")
+
+
+def print_end(lines: list[str]) -> None:
+    """Mark normal and quiet-mode progress complete after printer cleanup."""
+    lines.append("M73 P100 R0 ; print progress done")
+    lines.append("M73 Q100 S0 ; print progress done")

@@ -52,6 +52,7 @@ from .gcode_preamble import (
     PROBE_MARKER_PREFIX,
     firmware_asserts,
     metric_setup,
+    print_end,
     slicer_header,
     sweep_end_marker,
     sweep_start_marker,
@@ -265,6 +266,7 @@ def build_probe_test(params: ProbeParams) -> ProbePlan:
     if p.probe_temp > 0:
         lines.append("M104 S0 ; nozzle off")
     lines.append("M84 ; disable motors")
+    print_end(lines)
 
     return ProbePlan(
         gcode="\n".join(lines) + "\n",

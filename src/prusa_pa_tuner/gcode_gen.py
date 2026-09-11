@@ -46,6 +46,7 @@ from .gcode_preamble import (
     firmware_asserts,
     heat_home_setup,
     metric_setup,
+    print_end,
     slicer_header,
     sweep_end_marker,
     sweep_start_marker,
@@ -547,5 +548,6 @@ def build_sweep(params: SweepParams) -> SweepPlan:
     lines.append("M591 R ; restore stuck detection (matches PrusaSlicer's pattern)")
     lines.append("M104 S0 ; nozzle off")
     lines.append("M84 ; disable motors")
+    print_end(lines)
 
     return SweepPlan(gcode="\n".join(lines) + "\n", segments=segments, params=p)
