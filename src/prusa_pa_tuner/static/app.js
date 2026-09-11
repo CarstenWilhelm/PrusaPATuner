@@ -36,7 +36,16 @@ function writeForm(cfg) {
   for (const f of FIELDS) {
     if (cfg[f] === undefined) continue;
     const el = $(f);
-    if (el) el.value = cfg[f];
+    if (!el) continue;
+    el.value = cfg[f];
+    // A <select> silently blanks when the stored value has no matching
+    // <option> (e.g. a printer model this build doesn't list). Left blank,
+    // the next save would write "" back over the real config -- so re-add
+    // the stored value as an option instead of losing it.
+    if (el.tagName === "SELECT" && el.value !== String(cfg[f])) {
+      el.add(new Option(cfg[f], cfg[f]));
+      el.value = cfg[f];
+    }
   }
 }
 
