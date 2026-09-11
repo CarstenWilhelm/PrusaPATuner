@@ -2,7 +2,7 @@
 
 const FIELDS = [
   "printer_host", "printer_user", "printer_password", "printer_api_key", "udp_port",
-  "filament_label", "nozzle_temp", "preheat_temp", "nozzle_diameter", "filament_diameter",
+  "filament_label", "nozzle_temp", "preheat_temp", "printer_model", "nozzle_diameter", "filament_diameter",
   "slow_flow_mm3_s", "slow_volume_mm3", "fast_flow_mm3_s", "fast_volume_mm3",
   "cycles_per_K", "accel_mm_s2",
   "k_min", "k_max", "k_step",

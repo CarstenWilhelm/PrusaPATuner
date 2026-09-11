@@ -344,6 +344,7 @@ def params_from_config(cfg: AppConfig, udp_host: str) -> SweepParams:
         nozzle_diameter=cfg.nozzle_diameter,
         filament_diameter=cfg.filament_diameter,
         filament_label=cfg.filament_label,
+        printer_model=cfg.printer_model,
         slow_feed_mm_s=slow_feed_mm_s,
         fast_feed_mm_s=fast_feed_mm_s,
         slow_half_s=slow_half_s,

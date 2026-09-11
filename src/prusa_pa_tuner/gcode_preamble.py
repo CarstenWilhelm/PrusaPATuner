@@ -68,6 +68,21 @@ METRICS_TO_SILENCE: tuple[str, ...] = (
 )
 
 
+# Prusa printer model code, as the firmware's M862.3 check and PrusaSlicer's
+# `printer_model` header key spell it. M862.3 is an exact match against the
+# connected machine: the wrong value makes Buddy reject the file outright with
+# "G-CODE is for a different printer model". COREONE is this project's primary
+# target; the MK4 family runs the same Buddy firmware + loadcell, so the rest
+# of the gcode is unchanged -- only this identifier differs.
+DEFAULT_PRINTER_MODEL = "COREONE"
+
+# Observed on current Buddy builds. Not exhaustive and not enforced -- an
+# unknown string is passed through so a new model works before this list does.
+KNOWN_PRINTER_MODELS: tuple[str, ...] = (
+    "COREONE", "MK4", "MK4S", "MK3.9", "MK3.9S", "XL",
+)
+
+
 def slicer_header(
     lines: list[str],
     *,
@@ -77,6 +92,7 @@ def slicer_header(
     filament_label: str,
     nozzle_temp: float,
     printer_notes: str,
+    printer_model: str = DEFAULT_PRINTER_MODEL,
     extra_comment_lines: Iterable[str] = (),
 ) -> None:
     """Forged PrusaSlicer-style header block.
@@ -98,7 +114,7 @@ def slicer_header(
     lines.append("; bed_temperature = 0")
     lines.append("; layer_height = 0.2")
     lines.append("; max_print_height = 280")
-    lines.append("; printer_model = COREONE")
+    lines.append(f"; printer_model = {printer_model}")
     lines.append(f"; printer_notes = {printer_notes}")
     for extra in extra_comment_lines:
         lines.append(extra)
@@ -109,6 +125,7 @@ def firmware_asserts(
     lines: list[str],
     *,
     nozzle_diameter: float,
+    printer_model: str = DEFAULT_PRINTER_MODEL,
     input_shaper_comment: str = "FW feature check",
 ) -> None:
     """Prusa firmware feature assertions.
@@ -120,7 +137,7 @@ def firmware_asserts(
     """
     lines.append("M17 ; enable steppers")
     lines.append(f"M862.1 P{nozzle_diameter} A0 F1 ; nozzle check (HF)")
-    lines.append('M862.3 P "COREONE" ; printer model check')
+    lines.append(f'M862.3 P "{printer_model}" ; printer model check')
     lines.append("M862.5 P2 ; g-code level check")
     lines.append(f'M862.6 P"Input shaper" ; {input_shaper_comment}')
     lines.append("M115 U6.5.3+12780 ; require Buddy firmware >= 6.5.3")

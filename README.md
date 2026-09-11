@@ -50,13 +50,18 @@ on the printer's stock loadcell over UDP.
 ## Supported printers
 
 - **Prusa Core One** — primary development target.
-- **Prusa MK4 / MK4S / MK3.9** — same loadcell, same Buddy firmware family. Should work
-  with no changes; community testing very welcome.
+- **Prusa MK4 / MK4S / MK3.9** — same loadcell, same Buddy firmware family. Set
+  **Printer model** in the Printer section to match your machine; community testing
+  very welcome.
 - **Prusa XL** — has the loadcell. Multi-tool sequencing is not handled yet, so you'll
   have to manually pick a tool and sweep PA per material.
 
 If your Prusa runs current Buddy firmware and has loadcell-based first-layer
 calibration, it has what this tool needs.
+
+The generated gcode carries an `M862.3` model assert. If it doesn't match the
+connected printer the firmware refuses the file with *"G-CODE is for a different
+printer model"* — set **Printer model** correctly before generating.
 
 ### Klipper
 

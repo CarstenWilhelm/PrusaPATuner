@@ -86,6 +86,7 @@ class ProbeRun:
 def probe_params_from_config(cfg: AppConfig, udp_host: str) -> ProbeParams:
     return ProbeParams(
         probe_axis=cfg.probe_axis,
+        printer_model=cfg.printer_model,
         probe_dir=cfg.probe_dir,
         start_x=cfg.probe_start_x,
         start_y=cfg.probe_start_y,

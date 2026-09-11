@@ -34,6 +34,7 @@ import math
 from dataclasses import dataclass
 
 from .gcode_preamble import (
+    DEFAULT_PRINTER_MODEL,
     FLOW_MARKER_PREFIX,
     baseline_dwell,
     firmware_asserts,
@@ -53,6 +54,9 @@ class FlowRampParams:
     nozzle_diameter: float = 0.4
     filament_diameter: float = 1.75
     filament_label: str = "PLA"
+    # Prusa model code for the M862.3 firmware check. Wrong value = Buddy
+    # rejects the file ("G-CODE is for a different printer model").
+    printer_model: str = DEFAULT_PRINTER_MODEL
 
     # Sweep range (volumetric flow, mm³/s). Inclusive of max when it lands
     # on the grid.
@@ -138,10 +142,13 @@ def build_flow_ramp(params: FlowRampParams) -> FlowPlan:
         filament_label=p.filament_label,
         nozzle_temp=p.nozzle_temp,
         printer_notes="PrusaPATuner -- free-air max-flow test",
+        printer_model=p.printer_model,
         extra_comment_lines=(f"; flow_levels_mm3_s = {list(levels)}",),
     )
 
-    firmware_asserts(lines, nozzle_diameter=p.nozzle_diameter)
+    firmware_asserts(
+        lines, nozzle_diameter=p.nozzle_diameter, printer_model=p.printer_model
+    )
 
     # ---- metrics: stream to host, silence noise, enable what we consume ----
     # loadcell_value = primary back-pressure signal; pos_z = Z-marker
