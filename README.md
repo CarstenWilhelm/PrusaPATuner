@@ -2,6 +2,9 @@
 
 ## Recent updates
 
+- **Clean Windows launcher shutdown** ([#3](https://github.com/CarstenWilhelm/PrusaPATuner/pull/3)) —
+  Closing the `start.bat` window now stops the local server instead of leaving it
+  running in the background.
 - **Configurable printer model** ([#1](https://github.com/CarstenWilhelm/PrusaPATuner/pull/1)) —
   Select your printer model in the app instead of using a hardcoded COREONE value.
   Generated calibration G-code now carries the matching model check, avoiding the
