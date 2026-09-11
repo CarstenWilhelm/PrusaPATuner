@@ -390,6 +390,16 @@ The AGPL choice is deliberate: if you run a modified version of this tool as par
 hosted service (e.g. a cloud calibration service for someone else's printer), you must
 make your modifications available to that service's users.
 
+## Credits
+
+- **Author:** [Stefan Hermann (CNC Kitchen)](https://github.com/CNCKitchen) — original
+  concept, signal analysis and implementation.
+- **Contributor:** [Carsten Wilhelm](https://github.com/CarstenWilhelm) — multi-printer
+  support (MK4 / MK4S / MK3.9 / XL model handling) and hardware testing.
+
+Parts of this project were developed with AI-assisted coding. All changes were reviewed
+and verified against real printer hardware before release.
+
 ## Acknowledgements
 
 - **Bambu Lab A1 / A1 mini** — original consumer-printer demonstration of nozzle-
