@@ -1,4 +1,5 @@
 @echo off
+setlocal
 rem One-click launcher: creates the venv on first run, then starts the app.
 cd /d "%~dp0"
 
@@ -20,6 +21,7 @@ if "%NEEDS_INSTALL%"=="1" (
 rem Uvicorn exits 3 both on a clean Ctrl-C and on a startup failure such as a
 rem busy port, so the exit code cannot tell the two apart. Rather than guess,
 rem say something true in either case and keep the window open to read it.
+set "PRUSA_PA_TUNER_HANDLE_CONSOLE_CLOSE=1"
 .venv\Scripts\python.exe -m prusa_pa_tuner %*
 set RC=%ERRORLEVEL%
 if %RC%==0 exit /b 0

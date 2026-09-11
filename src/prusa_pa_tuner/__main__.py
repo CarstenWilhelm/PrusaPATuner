@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import logging
+import os
+import signal
 import sys
 import threading
 import time
@@ -12,6 +15,29 @@ import uvicorn
 
 from . import __version__
 from .config import config_path, load_config
+
+_CTRL_CLOSE_EVENT = 2
+_CLOSE_SHUTDOWN_TIMEOUT_S = 4.0
+
+
+def _handle_console_event(event: int, shutdown_complete: threading.Event) -> bool:
+    if event != _CTRL_CLOSE_EVENT:
+        return False
+    signal.raise_signal(signal.SIGINT)
+    # ponytail: Windows allows five seconds; use a service if cleanup ever needs longer.
+    shutdown_complete.wait(timeout=_CLOSE_SHUTDOWN_TIMEOUT_S)
+    return True
+
+
+def _install_console_close_handler(shutdown_complete: threading.Event):
+    handler_type = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_uint)
+    handler = handler_type(lambda event: _handle_console_event(event, shutdown_complete))
+    set_handler = ctypes.windll.kernel32.SetConsoleCtrlHandler
+    set_handler.argtypes = [handler_type, ctypes.c_bool]
+    set_handler.restype = ctypes.c_bool
+    if not set_handler(handler, True):
+        raise ctypes.WinError()
+    return handler
 
 
 def main() -> int:
@@ -45,12 +71,22 @@ def main() -> int:
 
         threading.Thread(target=_open, daemon=True).start()
 
-    uvicorn.run(
-        "prusa_pa_tuner.app:app",
-        host=args.host,
-        port=args.port,
-        log_level=args.log_level,
-    )
+    shutdown_complete = threading.Event()
+    close_handler = None
+    if os.name == "nt" and os.environ.get("PRUSA_PA_TUNER_HANDLE_CONSOLE_CLOSE") == "1":
+        close_handler = _install_console_close_handler(shutdown_complete)
+
+    try:
+        uvicorn.run(
+            "prusa_pa_tuner.app:app",
+            host=args.host,
+            port=args.port,
+            log_level=args.log_level,
+        )
+    finally:
+        shutdown_complete.set()
+        if close_handler is not None:
+            ctypes.windll.kernel32.SetConsoleCtrlHandler(close_handler, False)
     return 0
 
 
