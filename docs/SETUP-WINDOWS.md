@@ -4,7 +4,17 @@ A start-to-finish record of getting PrusaPATuner running on a Windows 11 machine
 (July 2026), including every place the README's install section was not enough and
 what fixed it. If the README steps fail for you, this is the document to read.
 
-## TL;DR — the working sequence
+## TL;DR — double-click `start.bat`
+
+`start.bat` in the repo root does everything below for you: it creates the venv
+on first run, installs the package, and starts the app. Use it unless you are
+doing dev work or debugging the environment itself. If it fails, the window
+stays open with the error, and the manual sequence below is how you dig in.
+
+Then do the **firewall check** further down — it is not something the launcher
+can fix for you, and it is the failure that looks like success.
+
+## The manual sequence
 
 ```powershell
 # from the repo root, in a regular (non-admin) PowerShell
