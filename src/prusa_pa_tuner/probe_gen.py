@@ -48,6 +48,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .gcode_preamble import (
+    DEFAULT_PRINTER_MODEL,
     PROBE_MARKER_PREFIX,
     firmware_asserts,
     metric_setup,
@@ -91,6 +92,9 @@ class ProbeParams:
     udp_port: int = 8514
     loadcell_metric: str = "loadcell_value"
     label: str = "Touch-probe lateral characterisation"
+    # Prusa model code for the M862.3 firmware check. Wrong value = Buddy
+    # rejects the file ("G-CODE is for a different printer model").
+    printer_model: str = DEFAULT_PRINTER_MODEL
 
     def dir_sign(self) -> float:
         return -1.0 if str(self.probe_dir).strip().startswith("-") else 1.0
@@ -159,6 +163,7 @@ def build_probe_test(params: ProbeParams) -> ProbePlan:
         filament_label="PLA",
         nozzle_temp=0.0,
         printer_notes="PrusaPATuner -- lateral touch-probe test",
+        printer_model=p.printer_model,
         extra_comment_lines=(
             f"; probe axis={axis}{'+' if sign > 0 else '-'} "
             f"creep={p.creep_mm} mm slow={p.slow_feed_mm_min} mm/min "
@@ -169,7 +174,7 @@ def build_probe_test(params: ProbeParams) -> ProbePlan:
     # TODO: pass the probe params' nozzle diameter here once ProbeParams
     # grows one -- 0.4 is hardcoded today because the probe is contact-only
     # (no extrusion) and the check is advisory.
-    firmware_asserts(lines, nozzle_diameter=0.4)
+    firmware_asserts(lines, nozzle_diameter=0.4, printer_model=p.printer_model)
 
     # ---- metrics: stream to host, silence noise, enable what we consume ----
     # loadcell_value = the contact-force signal under test; pos_x/pos_y give

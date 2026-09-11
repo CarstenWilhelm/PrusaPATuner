@@ -37,6 +37,11 @@ class AppConfig:
     # first purge. Running the warm-up ~10 °C hot accelerates homing and
     # ensures any residual filament is fully molten before priming.
     preheat_temp: float = 225.0
+    # Prusa model code emitted into the gcode header and the M862.3
+    # firmware check. Must match the connected printer or Buddy refuses
+    # the file with "G-CODE is for a different printer model".
+    # Known: COREONE, MK4, MK4S, MK3.9, MK3.9S, XL.
+    printer_model: str = "COREONE"
     nozzle_diameter: float = 0.4
     filament_diameter: float = 1.75
     # Volumetric burst spec. The runner converts these into the SweepParams

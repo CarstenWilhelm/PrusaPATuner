@@ -39,6 +39,7 @@ from typing import Iterable
 # is re-exported here for back-compat: flow_gen / probe_gen / livemap_gen and
 # external callers historically imported it from this module.
 from .gcode_preamble import (
+    DEFAULT_PRINTER_MODEL,
     METRICS_TO_SILENCE,
     PA_MARKER_PREFIX,
     baseline_dwell,
@@ -63,6 +64,9 @@ class SweepParams:
     nozzle_diameter: float = 0.4
     filament_diameter: float = 1.75
     filament_label: str = "PLA"
+    # Prusa model code for the M862.3 firmware check. Wrong value = Buddy
+    # rejects the file ("G-CODE is for a different printer model").
+    printer_model: str = DEFAULT_PRINTER_MODEL
 
     # extrusion velocities in mm/s of filament feed (Snapmaker U1 defaults)
     slow_feed_mm_s: float = 0.8
@@ -255,6 +259,7 @@ def build_sweep(params: SweepParams) -> SweepPlan:
         filament_label=p.filament_label,
         nozzle_temp=p.nozzle_temp,
         printer_notes="PrusaPATuner -- free-air PA calibration",
+        printer_model=p.printer_model,
         extra_comment_lines=(f"; K_values = {list(p.K_values)}",),
     )
 
@@ -262,6 +267,7 @@ def build_sweep(params: SweepParams) -> SweepPlan:
     firmware_asserts(
         lines,
         nozzle_diameter=p.nozzle_diameter,
+        printer_model=p.printer_model,
         input_shaper_comment=(
             'FW feature check (kills "not sliced for input shaping" prompt)'
         ),

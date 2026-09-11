@@ -2,7 +2,7 @@
 
 const FIELDS = [
   "printer_host", "printer_user", "printer_password", "printer_api_key", "udp_port",
-  "filament_label", "nozzle_temp", "preheat_temp", "nozzle_diameter", "filament_diameter",
+  "filament_label", "nozzle_temp", "preheat_temp", "printer_model", "nozzle_diameter", "filament_diameter",
   "slow_flow_mm3_s", "slow_volume_mm3", "fast_flow_mm3_s", "fast_volume_mm3",
   "cycles_per_K", "accel_mm_s2",
   "k_min", "k_max", "k_step",
@@ -36,7 +36,16 @@ function writeForm(cfg) {
   for (const f of FIELDS) {
     if (cfg[f] === undefined) continue;
     const el = $(f);
-    if (el) el.value = cfg[f];
+    if (!el) continue;
+    el.value = cfg[f];
+    // A <select> silently blanks when the stored value has no matching
+    // <option> (e.g. a printer model this build doesn't list). Left blank,
+    // the next save would write "" back over the real config -- so re-add
+    // the stored value as an option instead of losing it.
+    if (el.tagName === "SELECT" && el.value !== String(cfg[f])) {
+      el.add(new Option(cfg[f], cfg[f]));
+      el.value = cfg[f];
+    }
   }
 }
 

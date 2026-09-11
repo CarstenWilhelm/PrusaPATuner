@@ -137,6 +137,7 @@ class ConfigModel(BaseModel):
     udp_port: int = 8514
     nozzle_temp: float = 215.0
     preheat_temp: float = 225.0
+    printer_model: str = "COREONE"
     nozzle_diameter: float = 0.4
     filament_diameter: float = 1.75
     slow_flow_mm3_s: float = Field(1.92, gt=0)

@@ -15,6 +15,7 @@ extra key) the difference is a parameter, not a fork.
 """
 from __future__ import annotations
 
+import re
 from typing import Iterable, Sequence
 
 # Per-module comment-marker prefixes. The generators tag baseline / sweep /
@@ -68,6 +69,42 @@ METRICS_TO_SILENCE: tuple[str, ...] = (
 )
 
 
+# Prusa printer model code, as the firmware's M862.3 check and PrusaSlicer's
+# `printer_model` header key spell it. M862.3 is an exact match against the
+# connected machine: the wrong value makes Buddy reject the file outright with
+# "G-CODE is for a different printer model". COREONE is this project's primary
+# target; the MK4 family runs the same Buddy firmware + loadcell, so the rest
+# of the gcode is unchanged -- only this identifier differs.
+DEFAULT_PRINTER_MODEL = "COREONE"
+
+# Observed on current Buddy builds. Not exhaustive and NOT a whitelist -- an
+# unknown string is passed through so a new model works before this list does.
+# Used for the UI dropdown and as the fallback when a value is unusable.
+KNOWN_PRINTER_MODELS: tuple[str, ...] = (
+    "COREONE", "MK4", "MK4S", "MK3.9", "MK3.9S", "XL",
+)
+
+# Model codes are bare tokens (letters, digits, dot, dash, underscore). Anything
+# else -- crucially a newline or a quote -- would break out of the M862.3
+# argument and inject standalone commands into a file we upload to a printer.
+_MODEL_OK = re.compile(r"^[A-Za-z0-9._-]{1,32}$")
+
+
+def clean_printer_model(model: str | None) -> str:
+    """Whitespace-trim `model` and reject anything that isn't a bare token.
+
+    The value comes from user config and is interpolated straight into the
+    M862.3 assert, so it is a trust boundary: a newline in it injects live
+    gcode (`M104 S300` etc.) into a file the printer executes. Unknown but
+    well-formed codes pass through unchanged -- new Prusa models must work
+    without a code change -- so this validates SHAPE, not membership.
+    Unusable values fall back to the default rather than raising: a bad
+    stored config should not brick gcode generation.
+    """
+    cleaned = (model or "").strip()
+    return cleaned if _MODEL_OK.match(cleaned) else DEFAULT_PRINTER_MODEL
+
+
 def slicer_header(
     lines: list[str],
     *,
@@ -77,6 +114,7 @@ def slicer_header(
     filament_label: str,
     nozzle_temp: float,
     printer_notes: str,
+    printer_model: str = DEFAULT_PRINTER_MODEL,
     extra_comment_lines: Iterable[str] = (),
 ) -> None:
     """Forged PrusaSlicer-style header block.
@@ -98,7 +136,7 @@ def slicer_header(
     lines.append("; bed_temperature = 0")
     lines.append("; layer_height = 0.2")
     lines.append("; max_print_height = 280")
-    lines.append("; printer_model = COREONE")
+    lines.append(f"; printer_model = {clean_printer_model(printer_model)}")
     lines.append(f"; printer_notes = {printer_notes}")
     for extra in extra_comment_lines:
         lines.append(extra)
@@ -109,6 +147,7 @@ def firmware_asserts(
     lines: list[str],
     *,
     nozzle_diameter: float,
+    printer_model: str = DEFAULT_PRINTER_MODEL,
     input_shaper_comment: str = "FW feature check",
 ) -> None:
     """Prusa firmware feature assertions.
@@ -120,7 +159,9 @@ def firmware_asserts(
     """
     lines.append("M17 ; enable steppers")
     lines.append(f"M862.1 P{nozzle_diameter} A0 F1 ; nozzle check (HF)")
-    lines.append('M862.3 P "COREONE" ; printer model check')
+    lines.append(
+        f'M862.3 P "{clean_printer_model(printer_model)}" ; printer model check'
+    )
     lines.append("M862.5 P2 ; g-code level check")
     lines.append(f'M862.6 P"Input shaper" ; {input_shaper_comment}')
     lines.append("M115 U6.5.3+12780 ; require Buddy firmware >= 6.5.3")

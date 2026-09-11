@@ -85,6 +85,7 @@ def flow_params_from_config(cfg: AppConfig, udp_host: str) -> FlowRampParams:
         nozzle_diameter=cfg.nozzle_diameter,
         filament_diameter=cfg.filament_diameter,
         filament_label=cfg.filament_label,
+        printer_model=cfg.printer_model,
         min_flow_mm3_s=cfg.flow_min_mm3_s,
         max_flow_mm3_s=cfg.flow_max_mm3_s,
         flow_step_mm3_s=cfg.flow_step_mm3_s,

@@ -9,6 +9,7 @@ description = "Automatic Linear Advance tuner for the Prusa Core One using the n
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Stefan Hermann (CNC Kitchen)" }]
+maintainers = [{ name = "Carsten Wilhelm", email = "carsten@ring-life.de" }]
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 keywords = ["3d-printing", "prusa", "core-one", "linear-advance", "pressure-advance", "calibration"]

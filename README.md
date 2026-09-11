@@ -50,13 +50,18 @@ on the printer's stock loadcell over UDP.
 ## Supported printers
 
 - **Prusa Core One** — primary development target.
-- **Prusa MK4 / MK4S / MK3.9** — same loadcell, same Buddy firmware family. Should work
-  with no changes; community testing very welcome.
+- **Prusa MK4 / MK4S / MK3.9** — same loadcell, same Buddy firmware family. Set
+  **Printer model** in the Printer section to match your machine; community testing
+  very welcome.
 - **Prusa XL** — has the loadcell. Multi-tool sequencing is not handled yet, so you'll
   have to manually pick a tool and sweep PA per material.
 
 If your Prusa runs current Buddy firmware and has loadcell-based first-layer
 calibration, it has what this tool needs.
+
+The generated gcode carries an `M862.3` model assert. If it doesn't match the
+connected printer the firmware refuses the file with *"G-CODE is for a different
+printer model"* — set **Printer model** correctly before generating.
 
 ### Klipper
 
@@ -384,6 +389,16 @@ Released under the **GNU Affero General Public License v3.0 or later** — see
 The AGPL choice is deliberate: if you run a modified version of this tool as part of a
 hosted service (e.g. a cloud calibration service for someone else's printer), you must
 make your modifications available to that service's users.
+
+## Credits
+
+- **Author:** [Stefan Hermann (CNC Kitchen)](https://github.com/CNCKitchen) — original
+  concept, signal analysis and implementation.
+- **Contributor:** [Carsten Wilhelm](https://github.com/CarstenWilhelm) — multi-printer
+  support (MK4 / MK4S / MK3.9 / XL model handling) and hardware testing.
+
+Parts of this project were developed with AI-assisted coding. All changes were reviewed
+and verified against real printer hardware before release.
 
 ## Acknowledgements
 
