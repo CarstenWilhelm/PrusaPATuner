@@ -125,6 +125,27 @@ printer runs Klipper.
 
 ## Install
 
+### Windows — one click
+
+```bash
+git clone https://github.com/CNCKitchen/PrusaPATuner
+```
+
+Then **double-click `start.bat`** in the repo folder. The first run creates the
+virtual environment and installs everything, which takes a minute; every run
+after that starts the app immediately and opens your browser. There is no
+terminal step and nothing to activate.
+
+For a launcher outside the repo folder, right-click `start.bat` → **Show more
+options** → **Send to** → **Desktop (create shortcut)**. The shortcut can be
+pinned to the taskbar or Start menu like any other app.
+
+`start.bat` also forwards arguments, so `start.bat --port 9000` works from a
+shell. To rebuild after a dependency change, delete the `.venv` folder and
+double-click it again.
+
+### macOS / Linux, or manual setup
+
 ```bash
 git clone https://github.com/CNCKitchen/PrusaPATuner
 cd PrusaPATuner
@@ -253,6 +274,10 @@ churn entirely.
 Full protocol reference: [`Prusa-Firmware-Buddy/doc/metrics.md`](https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/master/doc/metrics.md).
 
 ## Run the app
+
+On Windows, double-click **`start.bat`**.
+
+Otherwise, with the venv activated:
 
 ```bash
 prusa-pa-tuner
